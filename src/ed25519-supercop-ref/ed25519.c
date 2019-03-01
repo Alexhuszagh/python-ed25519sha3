@@ -13,7 +13,7 @@ static void get_hram(unsigned char *hram, const unsigned char *sm, const unsigne
   for (i = 32;i < 64;++i)    playground[i] = pk[i-32];
   for (i = 64;i < smlen;++i) playground[i] = sm[i];
 
-  crypto_hash_sha512(hram,playground,smlen);
+  crypto_hash_sha3_512(hram,playground,smlen);
 }
 
 
@@ -27,13 +27,13 @@ int crypto_sign_publickey(
   ge25519 gepk;
   int i;
 
-  crypto_hash_sha512(sk, seed, 32);
+  crypto_hash_sha3_512(sk, seed, 32);
   sk[0] &= 248;
   sk[31] &= 127;
   sk[31] |= 64;
 
   sc25519_from32bytes(&scsk,sk);
-  
+
   ge25519_scalarmult_base(&gepk, &scsk);
   ge25519_pack(pk, &gepk);
   for(i=0;i<32;i++)
@@ -55,10 +55,10 @@ int crypto_sign(
   unsigned char s[32];
   unsigned char extsk[64];
   unsigned long long i;
-  unsigned char hmg[crypto_hash_sha512_BYTES];
-  unsigned char hram[crypto_hash_sha512_BYTES];
+  unsigned char hmg[crypto_hash_sha3_512_BYTES];
+  unsigned char hram[crypto_hash_sha3_512_BYTES];
 
-  crypto_hash_sha512(extsk, sk, 32);
+  crypto_hash_sha3_512(extsk, sk, 32);
   extsk[0] &= 248;
   extsk[31] &= 127;
   extsk[31] |= 64;
@@ -69,13 +69,13 @@ int crypto_sign(
   for(i=0;i<32;i++)
     sm[32 + i] = extsk[32+i];
 
-  crypto_hash_sha512(hmg, sm+32, mlen+32); /* Generate k as h(extsk[32],...,extsk[63],m) */
+  crypto_hash_sha3_512(hmg, sm+32, mlen+32); /* Generate k as h(extsk[32],...,extsk[63],m) */
 
   /* Computation of R */
   sc25519_from64bytes(&sck, hmg);
   ge25519_scalarmult_base(&ger, &sck);
   ge25519_pack(r, &ger);
-  
+
   /* Computation of s */
   for(i=0;i<32;i++)
     sm[i] = r[i];
@@ -85,12 +85,12 @@ int crypto_sign(
   sc25519_from64bytes(&scs, hram);
   sc25519_from32bytes(&scsk, extsk);
   sc25519_mul(&scs, &scs, &scsk);
-  
+
   sc25519_add(&scs, &scs, &sck);
 
   sc25519_to32bytes(s,&scs); /* cat s */
   for(i=0;i<32;i++)
-    sm[32 + i] = s[i]; 
+    sm[32 + i] = s[i];
 
   return 0;
 }
@@ -105,7 +105,7 @@ int crypto_sign_open(
   unsigned char t2[32];
   ge25519 get1, get2;
   sc25519 schram, scs;
-  unsigned char hram[crypto_hash_sha512_BYTES];
+  unsigned char hram[crypto_hash_sha3_512_BYTES];
 
   if (ge25519_unpackneg_vartime(&get1, pk)) return -1;
 

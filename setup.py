@@ -22,7 +22,7 @@ sources.extend(["src/ed25519-supercop-ref/"+s
                 for s in os.listdir("src/ed25519-supercop-ref")
                 if s.endswith(".c") and s!="test.c"])
 
-m = Extension("ed25519._ed25519",
+m = Extension("ed25519sha3._ed25519",
               include_dirs=["src/ed25519-supercop-ref"], sources=sources)
 
 commands = versioneer.get_cmdclass().copy()
@@ -43,7 +43,7 @@ class Test(Command):
     def run(self):
         self.setup_path()
         import unittest
-        test = unittest.defaultTestLoader.loadTestsFromName("ed25519.test_ed25519")
+        test = unittest.defaultTestLoader.loadTestsFromName("ed25519sha3.test_ed25519sha3")
         runner = unittest.TextTestRunner(verbosity=2)
         result = runner.run(test)
         sys.exit(not result.wasSuccessful())
@@ -54,7 +54,7 @@ class KnownAnswerTest(Test):
     def run(self):
         self.setup_path()
         import unittest
-        test = unittest.defaultTestLoader.loadTestsFromName("test_ed25519_kat")
+        test = unittest.defaultTestLoader.loadTestsFromName("test_ed25519sha3_kat")
         runner = unittest.TextTestRunner(verbosity=2)
         result = runner.run(test)
         sys.exit(not result.wasSuccessful())
@@ -85,8 +85,8 @@ class Speed(Test):
                 return "%.2fms" % (t*1e3)
             return "%.2fus" % (t*1e6)
 
-        S1 = "import ed25519; msg=b'hello world'"
-        S2 = "sk,vk = ed25519.create_keypair()"
+        S1 = "import ed25519sha3; msg=b'hello world'"
+        S2 = "sk,vk = ed25519sha3.create_keypair()"
         S3 = "sig = sk.sign(msg)"
         S4 = "vk.verify(sig, msg)"
 
@@ -100,14 +100,16 @@ class Speed(Test):
 
 commands["speed"] = Speed
 
-setup(name="ed25519",
+setup(name="ed25519sha3",
       version=versioneer.get_version(),
       description="Ed25519 public-key signatures",
       long_description=LONG_DESCRIPTION,
       author="Brian Warner",
       author_email="warner-python-ed25519@lothar.com",
+      maintainer="Alex Huszagh",
+      maintainer_email="ahuszagh@gmail.com",
       license="MIT",
-      url="https://github.com/warner/python-ed25519",
+      url="https://github.com/Alexhuszagh/python-ed25519sha3",
       classifiers=[
           "Development Status :: 5 - Production/Stable",
           "Intended Audience :: Developers",
@@ -117,11 +119,13 @@ setup(name="ed25519",
           "Programming Language :: Python :: 2.7",
           "Programming Language :: Python :: 3.3",
           "Programming Language :: Python :: 3.4",
+          "Programming Language :: Python :: 3.5",
+          "Programming Language :: Python :: 3.6",
+          "Programming Language :: Python :: 3.7",
           "Topic :: Security :: Cryptography",
           ],
       ext_modules=[m],
-      packages=["ed25519"],
-      package_dir={"ed25519": "src/ed25519"},
-      scripts=["bin/edsig"],
+      packages=["ed25519sha3"],
+      package_dir={"ed25519sha3": "src/ed25519sha3"},
       cmdclass=commands,
       )

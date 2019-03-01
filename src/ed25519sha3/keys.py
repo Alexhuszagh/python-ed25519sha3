@@ -179,13 +179,13 @@ class VerifyingKey(object):
 
 def selftest():
     message = b"crypto libraries should always test themselves at powerup"
-    sk = SigningKey(b"priv0-VIsfn5OFGa09Un2MR6Hm7BQ5++xhcQskU2OGXG8jSJl4cWLZrRrVcSN2gVYMGtZT+3354J5jfmqAcuRSD9KIyg",
+    sk = SigningKey(b"priv0-VIsfn5OFGa09Un2MR6Hm7BQ5++xhcQskU2OGXG8jSJnjxjOaMkzpWXx9uqcrsUZCnmLTGhRlypuOo6tmrlp7Rg",
                     prefix="priv0-", encoding="base64")
-    vk = VerifyingKey(b"pub0-eHFi2a0a1XEjdoFWDBrWU/t9+eCeY35qgHLkUg/SiMo",
+    vk = VerifyingKey(b"pub0-48YzmjJM6Vl8fbqnK7FGQp5i0xoUZcqbjqOrZq5ae0Y",
                       prefix="pub0-", encoding="base64")
     assert sk.get_verifying_key() == vk
     sig = sk.sign(message, prefix="sig0-", encoding="base64")
-    assert sig == b"sig0-E/QrwtSF52x8+q0l4ahA7eJbRKc777ClKNg217Q0z4fiYMCdmAOI+rTLVkiFhX6k3D+wQQfKdJYMxaTUFfv1DQ", sig
+    assert sig == b"sig0-QRZoKHVhsLeL/SVZCWC3CGdPLKVTCAgakbXwIoSn+HIoVxMc9RET1lqlfKy2/ogyZgggpRyq0FuVkg1lwAzjBQ", sig
     vk.verify(sig, message, prefix="sig0-", encoding="base64")
 
 selftest()

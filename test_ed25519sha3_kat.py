@@ -1,14 +1,14 @@
 import unittest
 from binascii import hexlify, unhexlify
-import ed25519
+import ed25519sha3
 
 class KnownAnswerTests(unittest.TestCase):
     def test_all(self):
-        # kat-ed25519.txt comes from "sign.input" on ed25519.cr.yp.to . The
-        # pure-python ed25519.py in the same distribution uses a very
+        # kat-ed25519sha3.txt is modified from "sign.input" on ed25519.cr.yp.to .
+        # The pure-python ed25519.py in the same distribution uses a very
         # different key format than the one used by NaCl.
-        for i,line in enumerate(open("kat-ed25519.txt")):
-            x = line.split(":")
+        for i,line in enumerate(open("kat-ed25519sha3.txt")):
+            x = line.strip().split(":")
             A,B,C,D = [unhexlify(i.encode("ascii")) for i in x[:4]]
             # A[:32] is the 32 byte seed (the entropy input to H())
             # A[32:] == B == the public point (pubkey)
@@ -27,10 +27,10 @@ class KnownAnswerTests(unittest.TestCase):
             #if len(msg) % 16 == 1:
             #    print "msg len = %d" % len(msg), time.time()
 
-            sk = ed25519.SigningKey(seed)
+            sk = ed25519sha3.SigningKey(seed)
             vk = sk.get_verifying_key()
             self.failUnlessEqual(vk.to_bytes(), vk_s)
-            vk2 = ed25519.VerifyingKey(vk_s)
+            vk2 = ed25519sha3.VerifyingKey(vk_s)
             self.failUnlessEqual(vk2, vk) # objects should compare equal
             self.failUnlessEqual(vk2.to_bytes(), vk_s)
             newsig = sk.sign(msg)

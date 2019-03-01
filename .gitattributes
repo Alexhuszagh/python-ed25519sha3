@@ -1,1 +1,1 @@
-src/ed25519/_version.py export-subst
+src/ed25519sha3/_version.py export-subst
